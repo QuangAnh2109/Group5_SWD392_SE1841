@@ -39,7 +39,5 @@ public partial class Employee
 
     public virtual ICollection<ProjectEmployee> ProjectEmployees { get; set; } = new List<ProjectEmployee>();
 
-    public virtual ICollection<Task> Tasks { get; set; } = new List<Task>();
-
     public virtual ICollection<Timesheet> Timesheets { get; set; } = new List<Timesheet>();
 }

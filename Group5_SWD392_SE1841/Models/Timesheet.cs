@@ -9,13 +9,13 @@ public partial class Timesheet
 
     public int EmployeeId { get; set; }
 
-    public DateOnly WorkDate { get; set; }
-
     public int WorkStatusId { get; set; }
 
-    public TimeOnly CheckInTime { get; set; }
+    public DateTime StartTime { get; set; }
 
-    public TimeOnly? CheckOutTime { get; set; }
+    public DateTime? EndTime { get; set; }
+
+    public int TaskId { get; set; }
 
     public string? Notes { get; set; }
 
@@ -32,4 +32,6 @@ public partial class Timesheet
     public bool DeleteFlg { get; set; }
 
     public virtual Employee Employee { get; set; } = null!;
+
+    public virtual Task Task { get; set; } = null!;
 }
