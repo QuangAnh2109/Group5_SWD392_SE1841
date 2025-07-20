@@ -9,6 +9,8 @@ public partial class Task
 
     public int ProjectId { get; set; }
 
+    public int EmployeeId { get; set; }
+
     public string TaskName { get; set; } = null!;
 
     public int TaskStatusId { get; set; }
@@ -26,6 +28,7 @@ public partial class Task
     public bool DeleteFlg { get; set; }
 
     public virtual Project Project { get; set; } = null!;
+    public virtual Employee Employee { get; set; } = null!;
 
     public virtual ICollection<Timesheet> Timesheets { get; set; } = new List<Timesheet>();
 }

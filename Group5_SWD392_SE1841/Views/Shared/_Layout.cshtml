@@ -5,8 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Group5_SWD392_SE1841</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Group5_SWD392_SE1841.styles.css" asp-append-version="true" />
+    <style>
+        /* Original CSS for the timesheet */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-color: #198754;
+            --warning-color: #fd7e14;
+            --danger-color: #dc3545;
+        }
+        /* Modal-specific CSS */
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        /* ... rest of the modal CSS ... */
+    </style>
 </head>
 <body>
     <header>
@@ -29,6 +45,7 @@
                 </div>
             </div>
         </nav>
+
     </header>
     <div class="container">
         <main role="main" class="pb-3">

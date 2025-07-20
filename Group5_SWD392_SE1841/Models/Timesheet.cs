@@ -9,7 +9,7 @@ public partial class Timesheet
 
     public int EmployeeId { get; set; }
 
-    public int WorkStatusId { get; set; }
+    public int WorkStatusId { get; set; } // 0 = Pending, 1 = Accepted, 2 = Rejected
 
     public DateTime StartTime { get; set; }
 

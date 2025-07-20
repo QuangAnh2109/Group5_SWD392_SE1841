@@ -31,19 +31,15 @@ public partial class Group5Swd392Se1841Context : DbContext
 
     public virtual DbSet<Timesheet> Timesheets { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=(local);Database=Group5_SWD392_SE1841;User Id=sa;Password=123;TrustServerCertificate=True;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccountId).HasName("PK__Account__46A222CD14A17B4C");
+            entity.HasKey(e => e.AccountId).HasName("PK__Account__46A222CDFDB0E236");
 
             entity.ToTable("Account");
 
-            entity.HasIndex(e => e.UserName, "UQ__Account__7C9273C47B3819E7").IsUnique();
+            entity.HasIndex(e => e.UserName, "UQ__Account__7C9273C40C1CF776").IsUnique();
 
             entity.Property(e => e.AccountId).HasColumnName("account_id");
             entity.Property(e => e.AccountRoleId).HasColumnName("account_role_id");
@@ -75,16 +71,16 @@ public partial class Group5Swd392Se1841Context : DbContext
             entity.HasOne(d => d.Employee).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Account__employe__44FF419A");
+                .HasConstraintName("FK__Account__employe__571DF1D5");
         });
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.DepartmentId).HasName("PK__Departme__C2232422B6C02280");
+            entity.HasKey(e => e.DepartmentId).HasName("PK__Departme__C2232422CEF40189");
 
             entity.ToTable("Department");
 
-            entity.HasIndex(e => e.DepartmentName, "UQ__Departme__226ED1571C09F9D7").IsUnique();
+            entity.HasIndex(e => e.DepartmentName, "UQ__Departme__226ED157A262CE4C").IsUnique();
 
             entity.Property(e => e.DepartmentId).HasColumnName("department_id");
             entity.Property(e => e.CreatedId).HasColumnName("created_id");
@@ -109,11 +105,11 @@ public partial class Group5Swd392Se1841Context : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__C52E0BA89D4B904B");
+            entity.HasKey(e => e.EmployeeId).HasName("PK__Employee__C52E0BA8A0DB7169");
 
             entity.ToTable("Employee");
 
-            entity.HasIndex(e => e.EmployeeEmail, "UQ__Employee__0A874BCFAD981764").IsUnique();
+            entity.HasIndex(e => e.EmployeeEmail, "UQ__Employee__0A874BCF13BB6444").IsUnique();
 
             entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.CreatedId).HasColumnName("created_id");
@@ -143,16 +139,16 @@ public partial class Group5Swd392Se1841Context : DbContext
 
             entity.HasOne(d => d.Department).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.DepartmentId)
-                .HasConstraintName("FK__Employee__depart__412EB0B6");
+                .HasConstraintName("FK__Employee__depart__534D60F1");
 
             entity.HasOne(d => d.Manager).WithMany(p => p.InverseManager)
                 .HasForeignKey(d => d.ManagerId)
-                .HasConstraintName("FK__Employee__manage__403A8C7D");
+                .HasConstraintName("FK__Employee__manage__52593CB8");
         });
 
         modelBuilder.Entity<Master>(entity =>
         {
-            entity.HasKey(e => new { e.TypeName, e.TypeKey }).HasName("PK__Master__EFD3E573258274DB");
+            entity.HasKey(e => new { e.TypeName, e.TypeKey }).HasName("PK__Master__EFD3E573D59858AB");
 
             entity.ToTable("Master");
 
@@ -182,11 +178,11 @@ public partial class Group5Swd392Se1841Context : DbContext
 
         modelBuilder.Entity<Project>(entity =>
         {
-            entity.HasKey(e => e.ProjectId).HasName("PK__Project__BC799E1FDAF07FC0");
+            entity.HasKey(e => e.ProjectId).HasName("PK__Project__BC799E1FED12026B");
 
             entity.ToTable("Project");
 
-            entity.HasIndex(e => e.ProjectName, "UQ__Project__4A0B0D6918715EA3").IsUnique();
+            entity.HasIndex(e => e.ProjectName, "UQ__Project__4A0B0D69762E887B").IsUnique();
 
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
             entity.Property(e => e.CreatedId).HasColumnName("created_id");
@@ -211,7 +207,7 @@ public partial class Group5Swd392Se1841Context : DbContext
 
         modelBuilder.Entity<ProjectEmployee>(entity =>
         {
-            entity.HasKey(e => new { e.EmployeeId, e.ProjectId, e.StartDate }).HasName("PK__ProjectE__1E4F6428BC46CC6D");
+            entity.HasKey(e => new { e.EmployeeId, e.ProjectId, e.StartDate }).HasName("PK__ProjectE__1E4F64287DC0F727");
 
             entity.ToTable("ProjectEmployee");
 
@@ -240,21 +236,21 @@ public partial class Group5Swd392Se1841Context : DbContext
             entity.HasOne(d => d.Employee).WithMany(p => p.ProjectEmployees)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ProjectEm__emplo__47DBAE45");
+                .HasConstraintName("FK__ProjectEm__emplo__59FA5E80");
 
             entity.HasOne(d => d.Project).WithMany(p => p.ProjectEmployees)
                 .HasForeignKey(d => d.ProjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ProjectEm__proje__48CFD27E");
+                .HasConstraintName("FK__ProjectEm__proje__5AEE82B9");
         });
 
         modelBuilder.Entity<Task>(entity =>
         {
-            entity.HasKey(e => e.TaskId).HasName("PK__Task__0492148D89682A13");
+            entity.HasKey(e => e.TaskId).HasName("PK__Task__0492148D43C59390");
 
             entity.ToTable("Task");
 
-            entity.HasIndex(e => e.TaskName, "UQ__Task__699065967E7EBA83").IsUnique();
+            entity.HasIndex(e => e.TaskName, "UQ__Task__69906596F8BB9C71").IsUnique();
 
             entity.Property(e => e.TaskId).HasColumnName("task_id");
             entity.Property(e => e.CreatedId).HasColumnName("created_id");
@@ -262,6 +258,7 @@ public partial class Group5Swd392Se1841Context : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("created_time");
             entity.Property(e => e.DeleteFlg).HasColumnName("delete_flg");
+            entity.Property(e => e.EmployeeId).HasColumnName("employee_id");
             entity.Property(e => e.ProjectId).HasColumnName("project_id");
             entity.Property(e => e.RecordNo)
                 .IsRowVersion()
@@ -277,15 +274,19 @@ public partial class Group5Swd392Se1841Context : DbContext
                 .HasColumnName("update_time");
             entity.Property(e => e.UpdatesId).HasColumnName("updates_id");
 
+            entity.HasOne(d => d.Employee).WithMany(p => p.Tasks)
+                .HasForeignKey(d => d.EmployeeId)
+                .HasConstraintName("FK_Task_Employee");
+
             entity.HasOne(d => d.Project).WithMany(p => p.Tasks)
                 .HasForeignKey(d => d.ProjectId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Task__project_id__4CA06362");
+                .HasConstraintName("FK__Task__project_id__5EBF139D");
         });
 
         modelBuilder.Entity<Timesheet>(entity =>
         {
-            entity.HasKey(e => e.TimeSheetId).HasName("PK__Timeshee__708A743BF40334E0");
+            entity.HasKey(e => e.TimeSheetId).HasName("PK__Timeshee__708A743B85AC0566");
 
             entity.ToTable("Timesheet");
 
@@ -320,12 +321,12 @@ public partial class Group5Swd392Se1841Context : DbContext
             entity.HasOne(d => d.Employee).WithMany(p => p.Timesheets)
                 .HasForeignKey(d => d.EmployeeId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Timesheet__emplo__4F7CD00D");
+                .HasConstraintName("FK__Timesheet__emplo__619B8048");
 
             entity.HasOne(d => d.Task).WithMany(p => p.Timesheets)
                 .HasForeignKey(d => d.TaskId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Timesheet__task___5070F446");
+                .HasConstraintName("FK__Timesheet__task___628FA481");
         });
 
         OnModelCreatingPartial(modelBuilder);
