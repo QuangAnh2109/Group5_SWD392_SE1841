@@ -19,7 +19,7 @@ builder.Services.AddDbContext<Group5Swd392Se1841Context>(options =>
 builder.Services.AddScoped<ITimesheetRepo, TimesheetRepo>();
 builder.Services.AddScoped<ITaskRepo, TaskRepo>();
 builder.Services.AddScoped<IProjectRepo, ProjectRepo>();
-
+builder.Services.AddScoped<IMasterRepo, MasterRepo>();
 
 // Register the service
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
