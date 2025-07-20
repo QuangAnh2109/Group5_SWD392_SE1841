@@ -7,13 +7,11 @@ public partial class Task
 {
     public int TaskId { get; set; }
 
-    public int EmployeeId { get; set; }
-
     public int ProjectId { get; set; }
 
-    public string TaskName { get; set; } = null!;
+    public int EmployeeId { get; set; }
 
-    public DateTime? EndTime { get; set; }
+    public string TaskName { get; set; } = null!;
 
     public int TaskStatusId { get; set; }
 
@@ -29,7 +27,8 @@ public partial class Task
 
     public bool DeleteFlg { get; set; }
 
+    public virtual Project Project { get; set; } = null!;
     public virtual Employee Employee { get; set; } = null!;
 
-    public virtual Project Project { get; set; } = null!;
+    public virtual ICollection<Timesheet> Timesheets { get; set; } = new List<Timesheet>();
 }

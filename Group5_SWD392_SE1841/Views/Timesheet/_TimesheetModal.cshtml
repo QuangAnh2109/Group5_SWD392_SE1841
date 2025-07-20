@@ -1,0 +1,107 @@
+﻿<div class="modal fade" id="timesheetModal" tabindex="-1" aria-labelledby="timesheetModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="timesheetModalLabel">
+                    <i class="bi bi-clock-history me-2"></i>Add New Timesheet Entry
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="timesheetForm" novalidate>
+                    <input type="hidden" id="timesheetId" name="timesheetId" value="">
+                    <div class="mb-4">
+                        <label class="form-label required-field">Select Task</label>
+                        <select class="form-select" id="taskSelect" required>
+                            <option value="">Choose Task...</option>
+                            @if (ViewBag.Tasks != null)
+                            {
+                                @foreach (var task in ViewBag.Tasks)
+                                {
+                                    <option value="@task.TaskId">@task.TaskName (@task.ProjectName)</option>
+                                }
+                            }
+                        </select>
+                        <div class="invalid-feedback">Please select a task.</div>
+                        <div id="taskPreview" class="mt-2" style="display: none;">
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <span class="project-badge me-2" id="previewBadge"></span>
+                                    <strong id="previewTask"></strong>
+                                </div>
+                                <small class="text-muted" id="previewDescription"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="workDate" class="form-label required-field">Work Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-calendar-date"></i></span>
+                            <input type="date" class="form-control" id="workDate" required>
+                            <div class="invalid-feedback">Please select a work date.</div>
+                        </div>
+                        <div class="form-text"><i class="bi bi-info-circle me-1"></i>Select the date when the work was performed</div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label required-field">Work Time</label>
+                        <div class="row g-3 time-inputs">
+                            <div class="col-md-6">
+                                <label for="startTime" class="form-label">Start Time</label>
+                                <div class="time-input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    <input type="time" class="form-control" id="startTime" required>
+                                    <div class="invalid-feedback">Please enter start time.</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="endTime" class="form-label">End Time</label>
+                                <div class="time-input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock-fill"></i></span>
+                                    <input type="time" class="form-control" id="endTime" required>
+                                    <div class="invalid-feedback">Please enter end time.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="duration-display text-center" id="durationDisplay">
+                                <i class="bi bi-stopwatch me-2"></i>Duration: --:-- hours
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="workNotes" class="form-label">Notes <span class="text-muted">(Optional)</span></label>
+                        <textarea class="form-control" id="workNotes" rows="4" placeholder="Describe what you worked on, any challenges faced, or additional details..."></textarea>
+                        <div class="form-text"><i class="bi bi-lightbulb me-1"></i>Add detailed notes to help track your progress and for future reference</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quick Actions</label>
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setCurrentTime('start')">
+                                <i class="bi bi-play-circle me-1"></i>Current Time as Start
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setCurrentTime('end')">
+                                <i class="bi bi-stop-circle me-1"></i>Current Time as End
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setToday()">
+                                <i class="bi bi-calendar-check me-1"></i>Today's Date
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex justify-content-between w-100">
+                    <div class="text-muted small"><i class="bi bi-info-circle me-1"></i>All fields marked with * are required</div>
+                    <div>
+                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </button>
+                        <button type="button" class="btn btn-success" id="saveButton" onclick="saveTimesheet()">
+                            <i class="bi bi-check-circle me-1"></i>Save Entry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
