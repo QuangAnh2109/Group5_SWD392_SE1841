@@ -1,0 +1,99 @@
+@startuml
+title Timesheet Delete Function - Class Diagram
+
+package "Controllers" {
+    class TimesheetController {
+        - _timesheetService: ITimesheetService
+        + TimesheetController(timesheetService)
+        + DeleteEntry(timesheetId: int): Task<IActionResult>
+        - GetCurrentEmployeeId(): int
+    }
+}
+
+package "Services" {
+    interface ITimesheetService {
+        + DeleteTimesheetAsync(timesheetId: int, employeeId: int): Task<bool>
+    }
+
+    class TimesheetService {
+        - _timesheetRepository: ITimesheetRepo
+        + TimesheetService(timesheetRepository)
+        + DeleteTimesheetAsync(timesheetId: int, employeeId: int): Task<bool>
+    }
+}
+
+package "Repositories" {
+    interface ITimesheetRepo {
+        + DeleteTimesheetAsync(timesheetId: int, employeeId: int): Task<bool>
+    }
+
+    class TimesheetRepo {
+        - _context: Group5Swd392Se1841Context
+        + TimesheetRepo(context)
+        + DeleteTimesheetAsync(timesheetId: int, employeeId: int): Task<bool>
+    }
+}
+
+package "Models" {
+    class Timesheet {
+        + TimeSheetId: int
+        + EmployeeId: int
+        + WorkStatusId: int
+        + StartTime: DateTime
+        + EndTime: DateTime?
+        + TaskId: int
+        + Notes: string?
+        + RecordNo: byte[]
+        + CreatedId: int
+        + CreatedTime: DateTime
+        + UpdatesId: int
+        + UpdateTime: DateTime
+        + DeleteFlg: bool
+        + Employee: Employee
+        + Task: Task
+    }
+
+    class Employee {
+        + EmployeeId: int
+        + ManagerId: int?
+        + DepartmentId: int?
+        + EmployeeName: string
+        + EmployeeEmail: string
+        + EmployeeStatusId: int
+        + Tasks: ICollection<Task>
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Task {
+        + TaskId: int
+        + ProjectId: int
+        + EmployeeId: int
+        + TaskName: string
+        + TaskStatusId: int
+        + Project: Project
+        + Employee: Employee
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Group5Swd392Se1841Context {
+        + Timesheets: DbSet<Timesheet>
+        + Employees: DbSet<Employee>
+        + Tasks: DbSet<Task>
+    }
+}
+
+TimesheetController --> ITimesheetService : uses
+
+TimesheetService ..|> ITimesheetService : implements
+TimesheetService --> ITimesheetRepo : uses
+
+TimesheetRepo ..|> ITimesheetRepo : implements
+TimesheetRepo --> Group5Swd392Se1841Context : uses
+TimesheetRepo --> Timesheet : soft deletes
+
+Timesheet --> Employee : belongs to
+Timesheet --> Task : belongs to
+Employee --> Task : has many
+Employee --> Timesheet : has many
+
+@enduml

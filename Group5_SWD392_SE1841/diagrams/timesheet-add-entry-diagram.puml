@@ -1,0 +1,152 @@
+@startuml
+title Timesheet Add Entry Function - Class Diagram (VP-Compatible)
+
+package "Controllers" {
+    class TimesheetController {
+        - _timesheetService: ITimesheetService
+        + TimesheetController(timesheetService)
+        + AddEntry(entry: TimesheetEntryDto): IActionResult
+        - GetCurrentEmployeeId(): int
+    }
+}
+
+package "Services" {
+    interface ITimesheetService {
+        + AddTimesheetAsync(entry: TimesheetEntryDto, employeeId: int): Timesheet
+    }
+
+    class TimesheetService {
+        - _timesheetRepository: ITimesheetRepo
+        - _taskRepository: ITaskRepo
+        + TimesheetService(timesheetRepository, taskRepository)
+        + AddTimesheetAsync(entry: TimesheetEntryDto, employeeId: int): Timesheet
+    }
+}
+
+package "Repositories" {
+    interface ITimesheetRepo {
+        + AddTimesheetAsync(timesheet: Timesheet): Timesheet
+    }
+
+    class TimesheetRepo {
+        - _context: Group5Swd392Se1841Context
+        + TimesheetRepo(context)
+        + AddTimesheetAsync(timesheet: Timesheet): Timesheet
+    }
+
+    interface ITaskRepo {
+        + GetAssignedTasksAsync(employeeId: int, projectId: int): List<Task>
+    }
+}
+
+package "Models" {
+    class Timesheet {
+        + TimeSheetId: int
+        + EmployeeId: int
+        + WorkStatusId: int
+        + StartTime: DateTime
+        + EndTime: DateTime
+        + TaskId: int
+        + Notes: string
+        + RecordNo: byte[]
+        + CreatedId: int
+        + CreatedTime: DateTime
+        + UpdatesId: int
+        + UpdateTime: DateTime
+        + DeleteFlg: bool
+    }
+
+    class Employee {
+        + EmployeeId: int
+        + ManagerId: int
+        + DepartmentId: int
+        + EmployeeName: string
+        + EmployeeEmail: string
+        + EmployeeStatusId: int
+    }
+
+    class Task {
+        + TaskId: int
+        + ProjectId: int
+        + EmployeeId: int
+        + TaskName: string
+        + TaskStatusId: int
+    }
+
+    class Project {
+        + ProjectId: int
+        + ProjectName: string
+        + ProjectStatus: int
+    }
+
+    class Group5Swd392Se1841Context {
+        + Timesheets
+        + Employees
+        + Tasks
+        + Projects
+    }
+}
+
+package "DTOs" {
+    class TimesheetEntryDto {
+        + TaskId: int
+        + Date: DateTime
+        + StartTime: string
+        + EndTime: string
+        + Notes: string
+    }
+}
+
+' Dependency relationships (uses)
+TimesheetController ..> ITimesheetService : <<uses>>
+TimesheetController ..> TimesheetEntryDto : <<uses>>
+
+' Implementation relationships
+TimesheetService ..|> ITimesheetService : <<implements>>
+TimesheetRepo ..|> ITimesheetRepo : <<implements>>
+
+' Composition relationships (strong ownership - parts cannot exist without whole)
+TimesheetService *-- ITimesheetRepo : <<composed of>>
+TimesheetService *-- ITaskRepo : <<composed of>>
+TimesheetController *-- ITimesheetService : <<composed of>>
+TimesheetRepo *-- Group5Swd392Se1841Context : <<composed of>>
+
+' Association relationships (uses/processes)
+TimesheetService --> TimesheetEntryDto : <<processes>>
+TimesheetService --> Timesheet : <<creates>>
+TimesheetRepo --> Timesheet : <<manages>>
+
+' Entity relationships with multiplicity
+Timesheet }o-- Employee : "many to one\n(belongs to)"
+Timesheet }o-- Task : "many to one\n(belongs to)"
+Task }o-- Project : "many to one\n(belongs to)"
+Task }o-- Employee : "many to one\n(assigned to)"
+
+' One-to-many relationships
+Employee ||--o{ Task : "one to many\n(has assigned)"
+Employee ||--o{ Timesheet : "one to many\n(logs)"
+Project ||--o{ Task : "one to many\n(contains)"
+
+' Association class for data flow
+TimesheetEntryDto ..> Timesheet : <<transforms to>>
+
+' Legend for relationship types
+note top of TimesheetController
+**Relationship Legend:**
+*-- : Composition (strong ownership)
+}o-- : Aggregation (weak ownership) 
+||--o{ : One-to-many association
+..> : Dependency
+..|> : Implementation
+end note
+
+note bottom of TimesheetRepo
+**Key Relationships in Add Function:**
+1. Controller depends on Service interface
+2. Service is composed of Repositories
+3. Service transforms DTO to Entity
+4. Repository manages Entity persistence
+5. Entities have navigational relationships
+end note
+
+@enduml
