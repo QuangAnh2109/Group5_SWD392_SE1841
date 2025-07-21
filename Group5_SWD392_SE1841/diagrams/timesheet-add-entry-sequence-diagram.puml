@@ -1,0 +1,89 @@
+@startuml
+title Timesheet Add Entry - Sequence Diagram
+
+actor User as U
+participant "Frontend/View" as V
+participant TimesheetController as TC
+participant ITimesheetService as TS
+participant TimesheetService as TSImpl
+participant ITimesheetRepo as TR
+participant TimesheetRepo as TRImpl
+participant "Database" as DB
+
+== Add New Timesheet Entry ==
+
+U -> V: Fill timesheet form\n(TaskId, Date, StartTime, EndTime, Notes)
+activate V
+
+V -> V: Validate form data
+V -> TC: POST /Timesheet/add-entry\n[FromBody] TimesheetEntryDto
+activate TC
+
+TC -> TC: Validate ModelState
+alt ModelState is invalid
+    TC --> V: BadRequest(ModelState)
+    V --> U: Display validation errors
+else ModelState is valid
+    TC -> TC: Get employeeId = 1\n(placeholder for actual authentication)
+    
+    TC -> TS: AddTimesheetAsync(entry, employeeId)
+    activate TS
+    
+    TS -> TSImpl: AddTimesheetAsync(entry, employeeId)
+    activate TSImpl
+    
+    TSImpl -> TSImpl: Validate entry != null
+    TSImpl -> TSImpl: Validate employeeId > 0
+    TSImpl -> TSImpl: Validate StartTime and EndTime not empty
+    
+    TSImpl -> TSImpl: Parse DateTime:\n- startDateTime = Date + StartTime\n- endDateTime = Date + EndTime
+    TSImpl -> TSImpl: Validate endDateTime > startDateTime
+    
+    TSImpl -> TSImpl: Create new Timesheet object:\n- EmployeeId = employeeId\n- TaskId = entry.TaskId\n- WorkStatusId = 0 (Pending)\n- StartTime = startDateTime\n- EndTime = endDateTime\n- Notes = entry.Notes\n- RecordNo = new GUID\n- CreatedId = employeeId\n- CreatedTime = DateTime.Now\n- UpdatesId = employeeId\n- UpdateTime = DateTime.Now\n- DeleteFlg = false
+    
+    TSImpl -> TR: AddTimesheetAsync(timesheet)
+    activate TR
+    
+    TR -> TRImpl: AddTimesheetAsync(timesheet)
+    activate TRImpl
+    
+    TRImpl -> DB: INSERT INTO Timesheets
+    activate DB
+    DB --> TRImpl: Success/Failure
+    deactivate DB
+    
+    TRImpl -> DB: SaveChangesAsync()
+    activate DB
+    DB --> TRImpl: Commit transaction
+    deactivate DB
+    
+    TRImpl --> TR: Return timesheet
+    deactivate TRImpl
+    
+    TR --> TSImpl: Return timesheet
+    deactivate TR
+    
+    TSImpl --> TS: Return timesheet
+    deactivate TSImpl
+    
+    TS --> TC: Return timesheet
+    deactivate TS
+    
+    TC --> V: Ok({ success: true })
+    V --> U: Display success message
+end
+
+== Error Handling ==
+
+alt ArgumentException occurs
+    TSImpl -> TSImpl: Throw ArgumentException\n(Invalid data validation)
+    TSImpl --> TS: ArgumentException
+    TS --> TC: ArgumentException
+    TC --> V: BadRequest({ error: ex.Message })
+    V --> U: Display error message
+end
+
+deactivate TC
+deactivate V
+
+@enduml

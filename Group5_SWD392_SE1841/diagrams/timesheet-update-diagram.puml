@@ -1,0 +1,129 @@
+@startuml
+title Timesheet Update Function - Class Diagram
+
+package "Controllers" {
+    class TimesheetController {
+        - _timesheetService: ITimesheetService
+        + TimesheetController(timesheetService)
+        + UpdateEntry(timesheetId: int, entry: TimesheetEntryDto): Task<IActionResult>
+        - GetCurrentEmployeeId(): int
+    }
+}
+
+package "Services" {
+    interface ITimesheetService {
+        + UpdateTimesheetAsync(entry: TimesheetEntryDto, timesheetId: int, employeeId: int): Task<Timesheet>
+    }
+
+    class TimesheetService {
+        - _timesheetRepository: ITimesheetRepo
+        - _taskRepository: ITaskRepo
+        + TimesheetService(timesheetRepository, taskRepository)
+        + UpdateTimesheetAsync(entry: TimesheetEntryDto, timesheetId: int, employeeId: int): Task<Timesheet>
+    }
+}
+
+package "Repositories" {
+    interface ITimesheetRepo {
+        + UpdateTimesheetAsync(timesheet: Timesheet): Task<Timesheet>
+    }
+
+    class TimesheetRepo {
+        - _context: Group5Swd392Se1841Context
+        + TimesheetRepo(context)
+        + UpdateTimesheetAsync(timesheet: Timesheet): Task<Timesheet>
+    }
+
+    interface ITaskRepo {
+        + GetAssignedTasksAsync(employeeId: int, projectId?: int): Task<List<Task>>
+    }
+}
+
+package "Models" {
+    class Timesheet {
+        + TimeSheetId: int
+        + EmployeeId: int
+        + WorkStatusId: int
+        + StartTime: DateTime
+        + EndTime: DateTime?
+        + TaskId: int
+        + Notes: string?
+        + RecordNo: byte[]
+        + CreatedId: int
+        + CreatedTime: DateTime
+        + UpdatesId: int
+        + UpdateTime: DateTime
+        + DeleteFlg: bool
+        + Employee: Employee
+        + Task: Task
+    }
+
+    class Employee {
+        + EmployeeId: int
+        + ManagerId: int?
+        + DepartmentId: int?
+        + EmployeeName: string
+        + EmployeeEmail: string
+        + EmployeeStatusId: int
+        + Tasks: ICollection<Task>
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Task {
+        + TaskId: int
+        + ProjectId: int
+        + EmployeeId: int
+        + TaskName: string
+        + TaskStatusId: int
+        + Project: Project
+        + Employee: Employee
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Project {
+        + ProjectId: int
+        + ProjectName: string
+        + ProjectStatus: int
+        + Tasks: ICollection<Task>
+    }
+
+    class Group5Swd392Se1841Context {
+        + Timesheets: DbSet<Timesheet>
+        + Employees: DbSet<Employee>
+        + Tasks: DbSet<Task>
+        + Projects: DbSet<Project>
+    }
+}
+
+package "DTOs" {
+    class TimesheetEntryDto {
+        + TaskId: int
+        + Date: DateTime
+        + StartTime: string
+        + EndTime: string
+        + Notes: string
+    }
+}
+
+TimesheetController --> ITimesheetService : uses
+TimesheetController --> TimesheetEntryDto : receives
+
+TimesheetService ..|> ITimesheetService : implements
+TimesheetService --> ITimesheetRepo : uses
+TimesheetService --> ITaskRepo : uses
+TimesheetService --> TimesheetEntryDto : processes
+TimesheetService --> Timesheet : updates
+
+TimesheetRepo ..|> ITimesheetRepo : implements
+TimesheetRepo --> Group5Swd392Se1841Context : uses
+TimesheetRepo --> Timesheet : modifies
+
+Timesheet --> Employee : belongs to
+Timesheet --> Task : belongs to
+Task --> Project : belongs to
+Task --> Employee : assigned to
+Employee --> Task : has many
+Employee --> Timesheet : has many
+Project --> Task : has many
+
+@enduml

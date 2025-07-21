@@ -1,0 +1,156 @@
+@startuml
+title Timesheet View/Get Function - Class Diagram
+
+package "Controllers" {
+    class TimesheetController {
+        - _timesheetService: ITimesheetService
+        - _projectService: IProjectService
+        - _taskService: ITaskService
+        + TimesheetController(timesheetService, projectService, taskService)
+        + ManageTimesheet(projectId?, taskId?, workStatusId?, startDate?, endDate?): Task<IActionResult>
+        - GetCurrentEmployeeId(): int
+    }
+}
+
+package "Services" {
+    interface ITimesheetService {
+        + GetFilteredTimesheetsAsync(employeeId?, projectId?, taskId?, workStatusId?, startDate?, endDate?): Task<List<Timesheet>>
+        + GetSummaryAsync(employeeId: int, currentDate: DateTime): Task<TimesheetSummaryDto>
+    }
+
+    class TimesheetService {
+        - _timesheetRepository: ITimesheetRepo
+        - _taskRepository: ITaskRepo
+        + TimesheetService(timesheetRepository, taskRepository)
+        + GetFilteredTimesheetsAsync(employeeId?, projectId?, taskId?, workStatusId?, startDate?, endDate?): Task<List<Timesheet>>
+        + GetSummaryAsync(employeeId: int, currentDate: DateTime): Task<TimesheetSummaryDto>
+    }
+
+    interface IProjectService {
+        + GetAssignedProjectsAsync(employeeId: int): Task<List<ProjectDto>>
+    }
+
+    interface ITaskService {
+        + GetAssignedTasksAsync(employeeId: int, projectId?: int): Task<List<TaskDto>>
+    }
+}
+
+package "Repositories" {
+    interface ITimesheetRepo {
+        + GetTimesheetsAsync(employeeId?, taskId?, workStatusId?, startDate?, endDate?): Task<List<Timesheet>>
+        + GetTotalHoursThisWeekAsync(employeeId: int, currentDate: DateTime): Task<decimal>
+        + GetTotalHoursThisMonthAsync(employeeId: int, currentDate: DateTime): Task<decimal>
+        + GetAverageHoursPerDayAsync(employeeId: int, startDate: DateTime, endDate: DateTime): Task<decimal>
+        + GetApprovalRateAsync(employeeId: int, startDate: DateTime, endDate: DateTime): Task<double>
+    }
+
+    class TimesheetRepo {
+        - _context: Group5Swd392Se1841Context
+        + TimesheetRepo(context)
+        + GetTimesheetsAsync(employeeId?, taskId?, workStatusId?, startDate?, endDate?): Task<List<Timesheet>>
+        + GetTotalHoursThisWeekAsync(employeeId: int, currentDate: DateTime): Task<decimal>
+        + GetTotalHoursThisMonthAsync(employeeId: int, currentDate: DateTime): Task<decimal>
+        + GetAverageHoursPerDayAsync(employeeId: int, startDate: DateTime, endDate: DateTime): Task<decimal>
+        + GetApprovalRateAsync(employeeId: int, startDate: DateTime, endDate: DateTime): Task<double>
+    }
+
+    interface ITaskRepo {
+        + GetAssignedTasksAsync(employeeId: int, projectId?: int): Task<List<Task>>
+    }
+}
+
+package "Models" {
+    class Timesheet {
+        + TimeSheetId: int
+        + EmployeeId: int
+        + WorkStatusId: int
+        + StartTime: DateTime
+        + EndTime: DateTime?
+        + TaskId: int
+        + Notes: string?
+        + Employee: Employee
+        + Task: Task
+    }
+
+    class Employee {
+        + EmployeeId: int
+        + ManagerId: int?
+        + DepartmentId: int?
+        + EmployeeName: string
+        + EmployeeEmail: string
+        + EmployeeStatusId: int
+        + Tasks: ICollection<Task>
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Task {
+        + TaskId: int
+        + ProjectId: int
+        + EmployeeId: int
+        + TaskName: string
+        + TaskStatusId: int
+        + Project: Project
+        + Employee: Employee
+        + Timesheets: ICollection<Timesheet>
+    }
+
+    class Project {
+        + ProjectId: int
+        + ProjectName: string
+        + ProjectStatus: int
+        + Tasks: ICollection<Task>
+        + ProjectEmployees: ICollection<ProjectEmployee>
+    }
+
+    class Group5Swd392Se1841Context {
+        + Timesheets: DbSet<Timesheet>
+        + Employees: DbSet<Employee>
+        + Tasks: DbSet<Task>
+        + Projects: DbSet<Project>
+    }
+}
+
+package "DTOs" {
+    class TimesheetSummaryDto {
+        + HoursThisWeek: decimal
+        + HoursThisMonth: decimal
+        + AverageHoursPerDay: decimal
+        + ApprovalRate: double
+    }
+
+    class TaskDto {
+        + TaskId: int
+        + TaskName: string
+        + Description: string
+        + ProjectId: int
+        + ProjectName: string
+    }
+
+    class ProjectDto {
+        + ProjectId: int
+        + ProjectName: string
+    }
+}
+
+TimesheetController --> ITimesheetService : uses
+TimesheetController --> IProjectService : uses
+TimesheetController --> ITaskService : uses
+
+TimesheetService ..|> ITimesheetService : implements
+TimesheetService --> ITimesheetRepo : uses
+TimesheetService --> ITaskRepo : uses
+TimesheetService --> TimesheetSummaryDto : returns
+
+TimesheetRepo ..|> ITimesheetRepo : implements
+TimesheetRepo --> Group5Swd392Se1841Context : uses
+TimesheetRepo --> Timesheet : retrieves
+
+Timesheet --> Employee : belongs to
+Timesheet --> Task : belongs to
+Task --> Project : belongs to
+Task --> Employee : assigned to
+Employee --> Task : has many
+Employee --> Timesheet : has many
+Project --> Task : has many
+
+@enduml
