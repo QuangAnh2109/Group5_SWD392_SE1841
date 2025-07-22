@@ -1,0 +1,64 @@
+﻿@model Group5_SWD392_SE1841.Models.Task
+@{
+    ViewData["Title"] = "Create Task by Status";
+    var employees = ViewBag.Employees as IEnumerable<dynamic> ?? new List<dynamic>();
+    var projectName = ViewBag.ProjectName as string ?? "Unknown";
+    var projectId = (int)ViewBag.ProjectId;
+    var taskGroups = ViewBag.TasksByStatus as Dictionary<int, List<Group5_SWD392_SE1841.Models.Task>> ?? new();
+    string[] statusLabels = new[] { "TODO", "IN PROGRESS", "HOLD", "DONE" };
+    string[] statusColors = new[] { "#1abc9c", "#3498db", "#9b59b6", "#2ecc71" };
+}
+
+<h2>Create Task for Project: <b>@projectName</b></h2>
+
+@for (int status = 0; status <= 3; status++)
+{
+    <div class="mb-4 p-3 border rounded shadow-sm" style="background-color:@statusColors[status]1A">
+        <h4 style="color:@statusColors[status]">
+            @statusLabels[status] (@taskGroups.GetValueOrDefault(status)?.Count ?? 0)
+        </h4>
+
+        <table class="table table-bordered bg-white">
+            <thead class="thead-light">
+                <tr>
+                    <th>Task Name</th>
+                    <th>Assigned Employee</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in taskGroups.GetValueOrDefault(status) ?? new List<Group5_SWD392_SE1841.Models.Task>())
+                {
+                    <tr>
+                        <td>@task.TaskName</td>
+                        <td>@task.Employee?.EmployeeName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <form asp-action="Create" method="post" class="row g-2 align-items-end">
+            <input type="hidden" name="projectId" value="@projectId" />
+            <input type="hidden" name="TaskStatusId" value="@status" />
+
+            <div class="col-md-4">
+                <label>Task Name</label>
+                <input name="TaskName" class="form-control" required />
+            </div>
+
+            <div class="col-md-4">
+                <label>Employee</label>
+                <select name="EmployeeId" class="form-control" required>
+                    <option value="">-- Select Employee --</option>
+                    @foreach (var emp in employees)
+                    {
+                        <option value="@emp.EmployeeId">@emp.EmployeeName</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success mt-4">Add Task</button>
+            </div>
+        </form>
+    </div>
+}
